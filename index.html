@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <script src="js/mui.min.js"></script>
+    <link href="css/mui.min.css" rel="stylesheet"/>
+    <script type="text/javascript" charset="utf-8">
+    
+    var ProgressCnt = 0; //进度条计数
+    var PagesCnt = 0; //获取总访问页面数目
+    var PageList //一个存所有网址的大字符串
+    var Pages = new Array(); //网址数组
+
+    var tmp = "";
+    
+      	mui.init();
+      	mui.plusReady(
+      		function()
+      		{
+				mui.ajax({  //我也不是特别懂ajax
+		            url      : 'http://120.77.213.5/test.txt',
+		            type     : 'GET',
+		            success  : function(data) {
+		                PageList = data;
+		                DataProcess(PageList);
+		            },
+		            error    : function(xhr,type,errorThrown) {
+		                mui.toast(type); 
+		            }
+		   });
+		});
+    
+    function FinishCnt() //完成一次访问进度条计数
+    {
+    	document.getElementById("progress").value = ++ProgressCnt;
+    }
+    
+    function GetPagesCnt() //获取页面数目
+    {
+    	return Pages.length;
+    }
+    
+    function DataProcess(data) //处理从服务器获取的网址
+    {
+    	for (var i in PageList)
+    	{
+    		if (PageList[i] != '\n')
+    			tmp += PageList[i];
+    		else
+    		{
+    			Pages.push(tmp);
+    			tmp = "";
+    			PagesCnt++;
+    		}
+    	}
+    }
+
+    function ProcessFun(i)
+    {	
+    	document.getElementById("iframe").src = Pages[i];
+    	FinishCnt();
+    }
+    
+    function onloadFun()
+	{
+		var i = 0;
+		document.getElementById("progress").max = GetPagesCnt();
+    	document.getElementById("progress").value = 0;
+		ProcessFun(ProgressCnt + 1);
+		if (i > GetPagesCnt())
+			return;
+	}
+    </script>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav">
+	    <h1 class="mui-title">标题</h1>
+	</header>
+		
+		<div class="mui-content">
+			<button>emmm</button>
+		&nbsp;Progress:
+		<progress id="progress" value="0" max="1000" style="width: 100%;"></progress>
+		
+		<iframe id = "iframe" src="" style="width: 100%; height: 500px;" onload="onloadFun()"></iframe>
+	</div>
+	
+</body> 
+</html>
